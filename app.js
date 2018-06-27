@@ -131,8 +131,10 @@
 
       addTodo (e) {
         e.target.value = ''
-        this.$store.dispatch('addTodo')
-        this.$store.dispatch('clearNewTodo')
+        setTimeout(() => {
+          this.$store.dispatch('addTodo')
+          this.$store.dispatch('clearNewTodo')
+        }, 2000)
       },
 
       removeTodo (todo) {

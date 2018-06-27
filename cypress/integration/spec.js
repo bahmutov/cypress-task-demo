@@ -16,6 +16,6 @@ describe('cy.task', () => {
     enterTodo(title)
     // confirm the new item has been saved
     // https://on.cypress.io/task
-    cy.task('hasSavedRecord', title)
+    cy.task('hasSavedRecord', title).should('equal', true)
   })
 })
