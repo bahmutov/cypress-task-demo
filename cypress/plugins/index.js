@@ -1,6 +1,8 @@
 // @ts-check
 const fs = require('fs')
 const path = require('path')
+const ora = require('ora')
+const Promise = require('bluebird')
 const repoRoot = path.join(__dirname, '..', '..')
 
 const findRecord = title => {
@@ -31,12 +33,16 @@ module.exports = (on, config) => {
   // and doing anything you might want. For example, checking "data.json" file!
   on('task', {
     hasSavedRecord (title, ms = 3000) {
-      console.log(
-        'looking for title "%s" in the database (time limit %dms)',
-        title,
-        ms
-      )
+      const spinner = ora(
+        `looking for title "${title}" in the database`
+      ).start()
       return hasRecordAsync(title, ms)
+        .tap(() => {
+          spinner.succeed(`found "${title}" in the database`)
+        })
+        .tapCatch(err => {
+          spinner.fail(err.message)
+        })
     }
   })
 }
