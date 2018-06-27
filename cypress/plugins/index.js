@@ -5,6 +5,8 @@ const ora = require('ora')
 const Promise = require('bluebird')
 const repoRoot = path.join(__dirname, '..', '..')
 
+// function should return boolean
+// or resolve with a boolean
 const findRecord = title => {
   const dbFilename = path.join(repoRoot, 'data.json')
   const contents = JSON.parse(fs.readFileSync(dbFilename, 'utf8'))
@@ -12,18 +14,20 @@ const findRecord = title => {
   return todos.find(record => record.title === title)
 }
 
-const hasRecordAsync = (title, ms) => {
-  const delay = 50
+const retryFn = ({ fn, onTimedOut, timeLimitMs = 5000, delay = 50 }) => {
   return new Promise((resolve, reject) => {
-    if (ms < 0) {
-      return reject(new Error(`Could not find record with title "${title}"`))
+    if (timeLimitMs < 0) {
+      return reject(onTimedOut())
     }
-    const found = findRecord(title)
+    const found = fn()
     if (found) {
       return resolve(true)
     }
     setTimeout(() => {
-      hasRecordAsync(title, ms - delay).then(resolve, reject)
+      retryFn({ fn, onTimedOut, timeLimitMs: timeLimitMs - delay, delay }).then(
+        resolve,
+        reject
+      )
     }, 50)
   })
 }
@@ -32,11 +36,16 @@ module.exports = (on, config) => {
   // "cy.task" can be used from specs to "jump" into Node environment
   // and doing anything you might want. For example, checking "data.json" file!
   on('task', {
-    hasSavedRecord (title, ms = 3000) {
+    hasSavedRecord (title, timeLimitMs = 5000) {
       const spinner = ora(
         `looking for title "${title}" in the database`
       ).start()
-      return hasRecordAsync(title, ms)
+
+      const fn = findRecord.bind(null, title)
+      const onTimedOut = () =>
+        new Error(`Could not find record with title "${title}"`)
+
+      return retryFn({ fn, onTimedOut, timeLimitMs, delay: 50 })
         .tap(() => {
           spinner.succeed(`found "${title}" in the database`)
         })
