@@ -1,27 +1,21 @@
 /// <reference types="cypress" />
 // @ts-check
 
-import { enterTodo } from './utils'
+import { enterTodo, resetDatabase } from './utils'
 
-describe('cy.tasks', () => {
-  it('can observe records saved in the database', () => {
-    const title = 'create a task'
-    enterTodo(title)
-    // https://on.cypress.io/task
-    cy.task('hasSavedRecord', title, { timeout: 10000 })
+describe('cy.task', () => {
+  beforeEach(resetDatabase)
+  beforeEach(() => {
+    cy.visit('/')
   })
 
-  it('returns resolved value', () => {
-    const title = 'create a task'
+  it('finds record in the database', () => {
+    // random text to avoid confusion
+    const id = Cypress._.random(1, 1e6)
+    const title = `todo ${id}`
     enterTodo(title)
+    // confirm the new item has been saved
     // https://on.cypress.io/task
-    cy
-      .task('hasSavedRecord', title, { timeout: 10000 })
-      .should('contain', {
-        title,
-        completed: false
-      })
-      // there is also an ID
-      .and('have.property', 'id')
+    cy.task('hasSavedRecord', title)
   })
 })
