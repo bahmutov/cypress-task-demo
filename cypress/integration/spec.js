@@ -18,4 +18,8 @@ describe('cy.task', () => {
     // https://on.cypress.io/task
     cy.task('hasSavedRecord', title).should('equal', true)
   })
+
+  it.skip('fails when cy.task rejects', () => {
+    cy.task('fails')
+  })
 })

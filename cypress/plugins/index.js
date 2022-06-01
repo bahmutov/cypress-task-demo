@@ -32,6 +32,10 @@ module.exports = (on, config) => {
   // "cy.task" can be used from specs to "jump" into Node environment
   // and doing anything you might want. For example, checking "data.json" file!
   on('task', {
+    fails () {
+      return Promise.reject(new Error('Expected to fail'))
+    },
+
     hasSavedRecord (title, ms = 3000) {
       const spinner = ora(
         `looking for title "${title}" in the database`

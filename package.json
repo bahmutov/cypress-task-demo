@@ -10,7 +10,8 @@
     "start": "json-server --static . data.json --middlewares ./node_modules/json-server-reset",
     "reset": "node reset-db.js",
     "reset:db": "npm run reset",
-    "reset:database": "npm run reset"
+    "reset:database": "npm run reset",
+    "dev": "start-test 3000 cy:open"
   },
   "repository": {
     "type": "git",
@@ -38,5 +39,8 @@
   },
   "engines": {
     "node": ">=6"
+  },
+  "devDependencies": {
+    "start-server-and-test": "^1.14.0"
   }
 }
