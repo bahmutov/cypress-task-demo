@@ -1,4 +1,4 @@
-# cypress-task-demo
+# cypress-task-demo ![cypress version](https://img.shields.io/badge/cypress-9.7.0-brightgreen)
 
 > Demo for [`cy.task`](https://on.cypress.io/task) to check written data during a test
 

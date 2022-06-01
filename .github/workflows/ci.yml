@@ -1,0 +1,8 @@
+name: ci
+on: [push]
+jobs:
+  tests:
+    # https://github.com/bahmutov/cypress-workflows
+    uses: bahmutov/cypress-workflows/.github/workflows/standard.yml@v1
+    with:
+      start: npm start
